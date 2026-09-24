@@ -1,122 +1,133 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import { getTasks, createTask, updateTask, deleteTask } from "./services/api";
+import type { Task } from "./services/api";
+import { countPendingTasks, filterTasks } from "./taskFilters";
+import type { TaskFilter } from "./taskFilters";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [title, setTitle] = useState("");
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [filter, setFilter] = useState<TaskFilter>("all");
+  const visibleTasks = filterTasks(tasks, filter);
+
+  useEffect(() => {
+    async function loadTasks() {
+      try {
+        const loadedTasks = await getTasks();
+        setTasks(loadedTasks);
+      } catch {
+        setLoadError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadTasks();
+  }, []);
+
+  async function addTask() {
+    const cleanTitle = title.trim();
+    if (cleanTitle === "" || saving) return;
+    setSaving(true);
+    setError("");
+    try {
+      const newTask = await createTask(cleanTitle);
+      setTasks((current) => [...current, newTask]);
+      setTitle("");
+    } catch {
+      setError("Could not add the task. Your title is still in the field.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function toggleTask(task: Task) {
+    if (saving) return;
+    setSaving(true);
+    setError("");
+    try {
+      const updatedTask = await updateTask(task.id, !task.completed);
+      setTasks((current) => current.map((item) =>
+        item.id === task.id ? updatedTask : item));
+    } catch {
+      setError("Could not update the task. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function removeTask(id: string) {
+    if (saving) return;
+    setSaving(true);
+    setError("");
+    try {
+      await deleteTask(id);
+      setTasks((current) => current.filter((task) => task.id !== id));
+    } catch {
+      setError("Could not delete the task. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <main>
+      <h1>My tasks</h1>
+      {loading ? <p>Loading tasks...</p> : loadError ? (
+        <div className="error">
+          <p>Could not load your tasks. Please try again.</p>
+          <button onClick={() => window.location.reload()}>Retry</button>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      ) : (
+        <>
+          <form onSubmit={(event) => {
+            event.preventDefault();
+            addTask();
+          }}>
+            <label htmlFor="task-title">New task</label>
+            <input id="task-title" type="text" placeholder="Write a task"
+              value={title} onChange={(event) => setTitle(event.target.value)}
+              disabled={saving} required />
+            <button type="submit" disabled={saving}>Add</button>
+          </form>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+          {error && <p className="error">{error}</p>}
+          {saving && <p>Saving...</p>}
+          <p>Pending: {countPendingTasks(tasks)}</p>
+          <label htmlFor="task-filter">Show</label>
+          <select id="task-filter" value={filter}
+            onChange={(event) => setFilter(event.target.value as TaskFilter)}>
+            <option value="all">All</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+          </select>
+          {tasks.length === 0 ? (
+              <p>No tasks yet.</p>
+            ) : visibleTasks.length === 0 ? (
+              <p>No tasks for this filter.</p>
+            ) : (
+            <ul>
+              {visibleTasks.map((task) => (
+                <li key={task.id}>
+                  <label>
+                    <input type="checkbox" checked={task.completed}
+                      disabled={saving} onChange={() => toggleTask(task)} />
+                    <span style={{ textDecoration: task.completed ? "line-through" : "none" }}>
+                      {task.title}
+                    </span>
+                  </label>
+                  <button type="button" disabled={saving}
+                    onClick={() => removeTask(task.id)}>Delete</button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      )}
+    </main>
+  );
 }
-
-export default App
