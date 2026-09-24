@@ -34,6 +34,24 @@ app.post("/api/tasks", async (req, res) => {
   }
 });
 
+app.patch("/api/tasks/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const response = await fetch(`${taskServiceUrl}/api/tasks/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completed: req.body?.completed }),
+      signal: AbortSignal.timeout(5000),
+    });
+    const task = await response.json();
+    res.status(response.status).json(task);
+  } catch (error) {
+    console.error("Could not update task:", error);
+    res.status(502).json({ error: "Could not update the task." });
+  }
+});
+
 app.listen(port, "127.0.0.1", () => {
   console.log(`Gateway available at http://127.0.0.1:${port}`);
 });

@@ -25,7 +25,7 @@ export async function createTask(title: string): Promise<Task> {
 }
 
 export async function updateTask(id: string, completed: boolean): Promise<Task> {
-  const response = await fetch(`/api/tasks/${id}`, {
+  const response = await fetch(`/gateway/tasks/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ completed }),
