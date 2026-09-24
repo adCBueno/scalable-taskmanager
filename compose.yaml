@@ -1,0 +1,21 @@
+services:
+  mongo:
+    image: mongo:8
+    volumes:
+      - mongo-data:/data/db
+
+  task-service:
+    build: ./task-service
+    ports:
+      - "127.0.0.1:3002:3002"
+    environment:
+      PORT: "3002"
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DATABASE: taskmanager_learning
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:
+    external: true
+    name: learning-mongo-data
