@@ -7,7 +7,7 @@ export function filterTasks(tasks: Task[], filter: TaskFilter): Task[] {
     return tasks.filter((task) => !task.completed);
   }
   if (filter === "completed") {
-    return tasks.filter((task) => !task.completed);
+    return tasks.filter((task) => task.completed);
   }
   return tasks;
 }
