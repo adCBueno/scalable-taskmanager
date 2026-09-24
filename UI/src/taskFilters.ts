@@ -13,5 +13,6 @@ export function filterTasks(tasks: Task[], filter: TaskFilter): Task[] {
 }
 
 export function countPendingTasks(tasks: Task[]): number {
-  return tasks.length;
+    const pendingTasks = tasks.filter((task) => !task.completed);
+    return pendingTasks.length;  
 }
