@@ -14,7 +14,7 @@ app.get("/api/tasks", async (_req, res) => {
     res.json(tasks);
   } catch (error) {
     console.error("Could not load tasks:", error);
-    res.json([]);
+    res.status(502).json({ error: "Could not load tasks." });
   }
 });
 
