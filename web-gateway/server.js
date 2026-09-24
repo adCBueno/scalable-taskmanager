@@ -11,7 +11,7 @@ app.get("/api/tasks", async (_req, res) => {
       signal: AbortSignal.timeout(5000),
     });
     const tasks = await response.json();
-    res.json(tasks);
+    res.status(response.status).json(tasks);
   } catch (error) {
     console.error("Could not load tasks:", error);
     res.status(502).json({ error: "Could not load tasks." });
