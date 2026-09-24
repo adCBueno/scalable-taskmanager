@@ -16,7 +16,9 @@ services:
       - mongo
 
   web-gateway:
-    build: ./web-gateway
+    build:
+      context: .
+      dockerfile: web-gateway/Dockerfile
     ports:
       - "127.0.0.1:3000:3000"
     environment:

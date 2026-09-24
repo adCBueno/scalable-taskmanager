@@ -1,7 +1,17 @@
 FROM node:24-alpine
-WORKDIR /app
-COPY package.json package-lock.json ./
+
+WORKDIR /app/web-gateway
+COPY web-gateway/package.json web-gateway/package-lock.json ./
 RUN npm ci --omit=dev
-COPY server.js ./
+COPY web-gateway/server.js ./
+
+WORKDIR /app/UI
+COPY UI/package.json UI/package-lock.json ./
+RUN npm ci
+COPY UI/ ./
+RUN npm run build
+RUN cp -r dist /app/web-gateway/public
+
+WORKDIR /app/web-gateway
 EXPOSE 3000
 CMD ["npm", "start"]

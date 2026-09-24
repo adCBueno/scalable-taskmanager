@@ -1,4 +1,5 @@
 import express from "express";
+import { fileURLToPath } from "node:url";
 
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
@@ -73,6 +74,9 @@ app.delete("/api/tasks/:id", async (req, res) => {
     res.status(502).json({ error: "Could not delete the task." });
   }
 });
+
+const publicDirectory = fileURLToPath(new URL("./public/", import.meta.url));
+app.use(express.static(publicDirectory));
 
 app.listen(port, "0.0.0.0", () => {
   console.log(`Gateway available at http://127.0.0.1:${port}`);
