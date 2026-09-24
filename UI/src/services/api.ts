@@ -37,7 +37,7 @@ export async function updateTask(id: string, completed: boolean): Promise<Task> 
 }
 
 export async function deleteTask(id: string): Promise<void> {
-  const response = await fetch(`/api/tasks/${id}`, { method: "DELETE" });
+  const response = await fetch(`/gateway/tasks/${id}`, { method: "DELETE" });
   if (!response.ok) {
     throw new Error(`Could not delete the task (${response.status})`);
   }

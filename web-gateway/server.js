@@ -52,6 +52,28 @@ app.patch("/api/tasks/:id", async (req, res) => {
   }
 });
 
+app.delete("/api/tasks/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const response = await fetch(`${taskServiceUrl}/api/tasks/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (response.status === 204) {
+      res.status(204).end();
+      return;
+    }
+
+    const errorBody = await response.json();
+    res.status(response.status).json(errorBody);
+  } catch (error) {
+    console.error("Could not delete task:", error);
+    res.status(502).json({ error: "Could not delete the task." });
+  }
+});
+
 app.listen(port, "127.0.0.1", () => {
   console.log(`Gateway available at http://127.0.0.1:${port}`);
 });
