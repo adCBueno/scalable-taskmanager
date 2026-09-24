@@ -15,6 +15,16 @@ services:
     depends_on:
       - mongo
 
+  web-gateway:
+    build: ./web-gateway
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      PORT: "3000"
+      TASK_SERVICE_URL: http://task-service:3002
+    depends_on:
+      - task-service
+
 volumes:
   mongo-data:
     external: true

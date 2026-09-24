@@ -74,6 +74,6 @@ app.delete("/api/tasks/:id", async (req, res) => {
   }
 });
 
-app.listen(port, "127.0.0.1", () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Gateway available at http://127.0.0.1:${port}`);
 });
