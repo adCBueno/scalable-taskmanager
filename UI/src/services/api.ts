@@ -5,7 +5,7 @@ export type Task = {
 };
 
 export async function getTasks(): Promise<Task[]> {
-  const response = await fetch("/gateway/tasks");
+  const response = await fetch("/api/tasks");
   if (!response.ok) {
     throw new Error(`Could not load tasks (${response.status})`);
   }
@@ -13,7 +13,7 @@ export async function getTasks(): Promise<Task[]> {
 }
 
 export async function createTask(title: string): Promise<Task> {
-  const response = await fetch("/gateway/tasks", {
+  const response = await fetch("/api/tasks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ title }),
@@ -25,7 +25,7 @@ export async function createTask(title: string): Promise<Task> {
 }
 
 export async function updateTask(id: string, completed: boolean): Promise<Task> {
-  const response = await fetch(`/gateway/tasks/${id}`, {
+  const response = await fetch(`/api/tasks/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ completed }),
@@ -37,7 +37,7 @@ export async function updateTask(id: string, completed: boolean): Promise<Task> 
 }
 
 export async function deleteTask(id: string): Promise<void> {
-  const response = await fetch(`/gateway/tasks/${id}`, { method: "DELETE" });
+  const response = await fetch(`/api/tasks/${id}`, { method: "DELETE" });
   if (!response.ok) {
     throw new Error(`Could not delete the task (${response.status})`);
   }

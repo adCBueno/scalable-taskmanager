@@ -6,11 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/gateway': {
-        target: 'http://127.0.0.1:3000',
-        rewrite: (path) => path.replace(/^\/gateway/, '/api'),
-      },
-      '/api': 'http://127.0.0.1:3002',
+      '/api': 'http://127.0.0.1:3000',
     },
   },
 })
