@@ -13,7 +13,7 @@ export async function getTasks(): Promise<Task[]> {
 }
 
 export async function createTask(title: string): Promise<Task> {
-  const response = await fetch("/api/tasks", {
+  const response = await fetch("/gateway/tasks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ title }),

@@ -3,6 +3,7 @@ import express from "express";
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
 const taskServiceUrl = process.env.TASK_SERVICE_URL ?? "http://127.0.0.1:3002";
+app.use(express.json());
 
 app.get("/api/tasks", async (_req, res) => {
   try {
@@ -14,6 +15,22 @@ app.get("/api/tasks", async (_req, res) => {
   } catch (error) {
     console.error("Could not load tasks:", error);
     res.json([]);
+  }
+});
+
+app.post("/api/tasks", async (req, res) => {
+  try {
+    const response = await fetch(`${taskServiceUrl}/api/tasks`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: req.body?.title }),
+      signal: AbortSignal.timeout(5000),
+    });
+    const task = await response.json();
+    res.status(response.status).json(task);
+  } catch (error) {
+    console.error("Could not create task:", error);
+    res.status(502).json({ error: "Could not reach the task service." });
   }
 });
 
