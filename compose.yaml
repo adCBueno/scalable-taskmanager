@@ -14,6 +14,8 @@ services:
       MONGODB_DATABASE: taskmanager_learning
     depends_on:
       - mongo
+    restart: always # if mongo is not ready, restart
+    # TODO: review healthcheck
 
   web-gateway:
     build:
